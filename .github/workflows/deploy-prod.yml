@@ -44,6 +44,10 @@ jobs:
               -p 8080:8080 \
               --name core-app \
               --restart always \
+              -e DB_HOST="${{ secrets.DB_HOST }}" \
+              -e DB_NAME="${{ secrets.DB_NAME }}" \
+              -e DB_USER="${{ secrets.DB_USER }}" \
+              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/core-app:prod
             
             docker image prune -f
