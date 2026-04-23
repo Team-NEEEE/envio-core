@@ -1,0 +1,49 @@
+name: Promote And Deploy Prod (CD)
+
+on:
+  # 테스트용 브랜치 임시 추가
+  push:
+    branches: [ "infra-practice" ]
+    # main일 때에는 아래만 있어야 함
+    workflow_dispatch:
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Pull dev image
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/core:dev
+
+      - name: Tag dev as prod
+        run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/core:dev ${{ secrets.DOCKERHUB_USERNAME }}/core:prod
+
+      - name: Push prod image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/core:prod
+
+      - name: Deploy to VM over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/core:prod
+            docker stop core-app || true
+            docker rm core-app || true
+            
+            docker run -d \
+              -p 8080:8080 \
+              --name core-app \
+              --restart always \
+              ${{ secrets.DOCKERHUB_USERNAME }}/core:prod
+            
+            docker image prune -f
