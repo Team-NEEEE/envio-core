@@ -1,10 +1,8 @@
 name: Promote And Deploy Prod (CD)
 
 on:
-  # 테스트용 브랜치 임시 추가
   push:
-    branches: [ "infra-practice" ]
-    # main일 때에는 아래만 있어야 함
+    branches: [ "develop" ]
     workflow_dispatch:
 
 jobs:
