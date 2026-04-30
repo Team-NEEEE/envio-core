@@ -1,6 +1,9 @@
 name: Build Dev Image (CI)
 
 on:
+  pull_request:
+    branches: [ "develop" ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
   push:
     branches: [ "develop" ]
   workflow_dispatch:
@@ -24,6 +27,7 @@ jobs:
           cache: gradle
 
       - name: Load environment variables
+        if: github.event_name != 'pull_request'
         run: |
           cat > .env.ci <<'ENV_FILE'
           ${{ secrets.ENV_FILE }}
@@ -40,6 +44,7 @@ jobs:
   docker-push:
     runs-on: ubuntu-latest
     needs: gradle-build
+    if: github.event_name != 'pull_request'
 
     steps:
       - name: Checkout code
