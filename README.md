@@ -6,7 +6,7 @@ Spring Boot 기반 핵심 API 서버입니다. 이 저장소는 도메인 단위
 
 ## 개발 환경
 
-- Java 21
+- Java 25
 - Spring Boot 4.0.5
 - PostgreSQL
 - Redis

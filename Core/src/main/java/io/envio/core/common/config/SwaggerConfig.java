@@ -16,8 +16,8 @@ public class SwaggerConfig {
 	public OpenAPI customOpenApi() {
 
 		return new OpenAPI()
-			.info(new Info().title("A.수강 신청 시스템 API")
-				.description("신윤섭 백엔드 채용 과제 - 수강 신청 시스템 API 서버")
+			.info(new Info().title("Envio Core API")
+				.description("Envio Core API Server")
 				.version("v1.0"));
 	}
 }
