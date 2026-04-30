@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:18.3
-    container_name: envio-postgres
+    container_name: postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DBNAME:-enviodb}
       POSTGRES_USER: ${POSTGRES_USERNAME:-user}
@@ -20,7 +20,7 @@ services:
 
   redis:
     image: redis:8.6.2
-    container_name: envio-redis
+    container_name: redis
     ports:
       - "6379:6379"
     volumes:

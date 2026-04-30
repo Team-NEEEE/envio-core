@@ -10,6 +10,11 @@ spring:
   application:
     name: envio-core
 
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
+
   web:
     resources:
       add-mappings: false
@@ -34,6 +39,12 @@ spring:
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD}
 
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:init.sql
+      continue-on-error: false
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -48,7 +59,7 @@ spring:
           in_clause_parameter_padding: true
         connection:
           provider_disables_autocommit: true
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
     open-in-view: false
 
 logging:
