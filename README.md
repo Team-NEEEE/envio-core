@@ -2,7 +2,7 @@
 
 Spring Boot 기반 핵심 API 서버입니다. 이 저장소는 도메인 단위로 코드를 나누고, 공통 응답/예외/검증/로깅 규칙을 일관되게 적용합니다.
 
-현재 코드 작성 예시는 `Core/src/main/java/io/envio/core/domain/user`에서 확인할 수 있습니다. 해당 도메인은 예제 목적의 기준이며, 이후 실제 요구사항에 맞게 교체될 수 있습니다.
+현재 코드 작성 예시는 `Core/src/main/java/io/envio/core/domain/user_example`에서 확인할 수 있습니다. 해당 도메인은 예제 목적의 기준이며, 이후 실제 요구사항에 맞게 교체될 수 있습니다.
 
 ## 개발 환경
 
