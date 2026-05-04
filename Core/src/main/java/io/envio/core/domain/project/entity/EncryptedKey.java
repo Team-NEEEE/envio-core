@@ -31,7 +31,7 @@ public class EncryptedKey {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userdevice_id")
+    @JoinColumn(name = "user_device_id")
     private UserDevice userDevice;
 
     @ManyToOne(fetch = FetchType.LAZY)
