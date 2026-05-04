@@ -47,7 +47,7 @@ REDIS_PASSWORD=password
 ./gradlew checkstyleMain
 
 # 단일 테스트
-./gradlew test --tests "io.envio.core.domain.user.converter.UserConverterTest"
+./gradlew test --tests "io.envio.core.domain.user_example.converter.UserConverterTest"
 ```
 
 ## 도메인 구조
