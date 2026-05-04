@@ -1,6 +1,6 @@
 package io.envio.core.domain.project.service;
 
-import io.envio.core.domain.project.repository.UserProjectRepository;
+import io.envio.core.domain.project.repository.EncryptedKeyRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectService {
 
-    private final UserProjectRepository userProjectRepository;
+    private final EncryptedKeyRepository userProjectRepository;
 
 
 

@@ -1,14 +1,26 @@
 package io.envio.core.domain.project.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.CascadeType;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "Projects")
+@Table(name = "projects")
 @Getter
 @Builder
 @AllArgsConstructor
@@ -18,7 +30,7 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_id")
-    private Long projectId;
+    private Long id;
 
     @Column(name = "project_name")
     private String projectName;
@@ -45,5 +57,5 @@ public class Project {
     // 중간 테이블을 만들었음으로 이거 써도되고 안써도 댐
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserProject> userProjects = new ArrayList<>();
+    private List<EncryptedKey> userProjects = new ArrayList<>();
 }
