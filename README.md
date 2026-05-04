@@ -83,7 +83,7 @@ io.envio.core
 예제 도메인 구조는 아래 경로에서 확인할 수 있습니다.
 
 ```text
-Core/src/main/java/io/envio/core/domain/user
+Core/src/main/java/io/envio/core/domain/user_example
 ├── controller
 │   └── UserController.java
 ├── converter
