@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserDevice {
 
-    @Id
-    @Column(name = "user_device_id")
-    private Long id;
+	@Id
+	@Column(name = "user_device_id")
+	private Long id;
 
-    // 필요하면 추가
-    // private Long userId;
+	// 필요하면 추가
+	// private Long userId;
 }

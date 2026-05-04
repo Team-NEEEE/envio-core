@@ -1,4 +1,4 @@
-package io.envio.core.domain.user_example.dto.request;
+package io.envio.core.domain.example.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

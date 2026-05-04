@@ -1,7 +1,6 @@
-package io.envio.core.domain.user_example.entity;
+package io.envio.core.domain.example.entity;
 
 import io.envio.core.common.entity.BaseEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

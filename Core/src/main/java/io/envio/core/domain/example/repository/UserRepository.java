@@ -1,10 +1,10 @@
-package io.envio.core.domain.user_example.repository;
+package io.envio.core.domain.example.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import io.envio.core.domain.user_example.entity.User;
+import io.envio.core.domain.example.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 

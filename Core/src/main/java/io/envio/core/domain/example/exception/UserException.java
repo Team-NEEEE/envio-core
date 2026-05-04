@@ -1,4 +1,4 @@
-package io.envio.core.domain.user_example.exception;
+package io.envio.core.domain.example.exception;
 
 import io.envio.core.common.error.ErrorCode;
 import io.envio.core.common.error.exception.BusinessException;

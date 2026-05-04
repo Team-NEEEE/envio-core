@@ -1,19 +1,20 @@
 package io.envio.core.domain.project.repository;
 
-import io.envio.core.domain.project.entity.EncryptedKey;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import io.envio.core.domain.project.entity.EncryptedKey;
+
 public interface EncryptedKeyRepository extends JpaRepository<EncryptedKey, Long> {
 
-    List<EncryptedKey> findByProject_Id(Long projectId);
+	List<EncryptedKey> findByProjectId(Long projectId);
 
-    List<EncryptedKey> findByUserDevice_Id(Long userDeviceId);
+	List<EncryptedKey> findByUserDeviceId(Long userDeviceId);
 
-    Optional<EncryptedKey> findByUserDevice_IdAndProject_Id(
-            Long userDeviceId,
-            Long projectId
-    );
+	Optional<EncryptedKey> findByUserDeviceIdAndProjectId(
+		Long userDeviceId,
+		Long projectId
+	);
 }

@@ -1,4 +1,4 @@
-package io.envio.core.domain.user_example.dto.response;
+package io.envio.core.domain.example.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

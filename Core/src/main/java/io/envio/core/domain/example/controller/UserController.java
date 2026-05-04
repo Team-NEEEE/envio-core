@@ -1,4 +1,4 @@
-package io.envio.core.domain.user_example.controller;
+package io.envio.core.domain.example.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.envio.core.common.response.BaseResponse;
 import io.envio.core.common.util.ResponseUtils;
-import io.envio.core.domain.user_example.dto.request.UserCreateReqDto;
-import io.envio.core.domain.user_example.dto.response.UserResDto;
-import io.envio.core.domain.user_example.service.facade.UserFacadeService;
-
+import io.envio.core.domain.example.dto.request.UserCreateReqDto;
+import io.envio.core.domain.example.dto.response.UserResDto;
+import io.envio.core.domain.example.service.facade.UserFacadeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

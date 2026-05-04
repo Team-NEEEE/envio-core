@@ -1,14 +1,13 @@
-package io.envio.core.domain.user_example.service.facade;
+package io.envio.core.domain.example.service.facade;
 
 import org.springframework.stereotype.Service;
 
-import io.envio.core.domain.user_example.converter.UserConverter;
-import io.envio.core.domain.user_example.dto.request.UserCreateReqDto;
-import io.envio.core.domain.user_example.dto.response.UserResDto;
-import io.envio.core.domain.user_example.entity.User;
-import io.envio.core.domain.user_example.service.command.UserCommandService;
-import io.envio.core.domain.user_example.service.query.UserQueryService;
-
+import io.envio.core.domain.example.converter.UserConverter;
+import io.envio.core.domain.example.dto.request.UserCreateReqDto;
+import io.envio.core.domain.example.dto.response.UserResDto;
+import io.envio.core.domain.example.entity.User;
+import io.envio.core.domain.example.service.command.UserCommandService;
+import io.envio.core.domain.example.service.query.UserQueryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 

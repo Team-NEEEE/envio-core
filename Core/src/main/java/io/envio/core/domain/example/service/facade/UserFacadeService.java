@@ -1,7 +1,7 @@
-package io.envio.core.domain.user_example.service.facade;
+package io.envio.core.domain.example.service.facade;
 
-import io.envio.core.domain.user_example.dto.request.UserCreateReqDto;
-import io.envio.core.domain.user_example.dto.response.UserResDto;
+import io.envio.core.domain.example.dto.request.UserCreateReqDto;
+import io.envio.core.domain.example.dto.response.UserResDto;
 
 public interface UserFacadeService {
 

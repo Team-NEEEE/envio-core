@@ -1,15 +1,14 @@
-package io.envio.core.domain.user_example.service.command;
+package io.envio.core.domain.example.service.command;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.envio.core.common.error.ErrorCode;
-import io.envio.core.domain.user_example.converter.UserConverter;
-import io.envio.core.domain.user_example.dto.request.UserCreateReqDto;
-import io.envio.core.domain.user_example.entity.User;
-import io.envio.core.domain.user_example.exception.UserException;
-import io.envio.core.domain.user_example.repository.UserRepository;
-
+import io.envio.core.domain.example.converter.UserConverter;
+import io.envio.core.domain.example.dto.request.UserCreateReqDto;
+import io.envio.core.domain.example.entity.User;
+import io.envio.core.domain.example.exception.UserException;
+import io.envio.core.domain.example.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

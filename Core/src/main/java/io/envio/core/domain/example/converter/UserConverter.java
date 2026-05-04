@@ -1,9 +1,8 @@
-package io.envio.core.domain.user_example.converter;
+package io.envio.core.domain.example.converter;
 
-import io.envio.core.domain.user_example.dto.request.UserCreateReqDto;
-import io.envio.core.domain.user_example.dto.response.UserResDto;
-import io.envio.core.domain.user_example.entity.User;
-
+import io.envio.core.domain.example.dto.request.UserCreateReqDto;
+import io.envio.core.domain.example.dto.response.UserResDto;
+import io.envio.core.domain.example.entity.User;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

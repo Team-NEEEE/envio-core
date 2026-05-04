@@ -1,6 +1,6 @@
-package io.envio.core.domain.user_example.service.query;
+package io.envio.core.domain.example.service.query;
 
-import io.envio.core.domain.user_example.entity.User;
+import io.envio.core.domain.example.entity.User;
 
 public interface UserQueryService {
 
