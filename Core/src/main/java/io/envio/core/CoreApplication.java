@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = {
 	"io.envio.core.common",
-	"io.envio.core.domain.project"
+	"io.envio.core.domain.project",
+	"io.envio.core.domain.user"
 })
 @EnableJpaRepositories(basePackages = {
-	"io.envio.core.domain.project.repository"
+	"io.envio.core.domain.project.repository",
+	"io.envio.core.domain.user.repository"
 })
 public class CoreApplication {
 

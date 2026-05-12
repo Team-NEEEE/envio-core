@@ -1,5 +1,7 @@
 package io.envio.core.domain.project.service.query;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -7,6 +9,7 @@ import io.envio.core.common.error.ErrorCode;
 import io.envio.core.domain.project.entity.History;
 import io.envio.core.domain.project.exception.ProjectException;
 import io.envio.core.domain.project.repository.HistoryRepository;
+import io.envio.core.domain.project.repository.ProjectRepository;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectQueryServiceImpl implements ProjectQueryService {
 
+	private final ProjectRepository projectRepository;
 	private final HistoryRepository historyRepository;
 
 	@Override
@@ -27,5 +31,13 @@ public class ProjectQueryServiceImpl implements ProjectQueryService {
 
 		return historyRepository.findFirstByProjectIdOrderByVersionIdDesc(projectId)
 			.orElseThrow(() -> new ProjectException(ErrorCode.ENVIRONMENT_VERSION_NOT_INITIALIZED));
+	}
+
+	@Override
+	public List<History> getProjectHistories(final Long projectId) {
+		if (!projectRepository.existsById(projectId)) {
+			throw new ProjectException(ErrorCode.PROJECT_NOT_FOUND);
+		}
+		return historyRepository.findAllByProjectIdOrderByVersionIdDesc(projectId);
 	}
 }

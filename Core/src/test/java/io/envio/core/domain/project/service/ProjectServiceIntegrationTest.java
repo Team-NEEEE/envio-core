@@ -187,4 +187,32 @@ class ProjectServiceIntegrationTest {
 			.isInstanceOf(ProjectException.class)
 			.hasMessage(ErrorCode.PROJECT_NOT_FOUND.getMessage());
 	}
+
+	@Test
+	@DisplayName("프로젝트_히스토리_전체를_조회한다")
+	void getProjectHistory_success() {
+		// given
+		History h1 = History.builder()
+			.project(savedProject)
+			.versionId(1L)
+			.userGithubId("user1")
+			.createdAt(LocalDateTime.now())
+			.build();
+		History h2 = History.builder()
+			.project(savedProject)
+			.versionId(2L)
+			.userGithubId("user2")
+			.createdAt(LocalDateTime.now().plusMinutes(1))
+			.build();
+		historyRepository.save(h1);
+		historyRepository.save(h2);
+
+		// when
+		java.util.List<History> results = projectQueryService.getProjectHistories(savedProject.getId());
+
+		// then
+		assertThat(results).hasSize(2);
+		assertThat(results.get(0).getVersionId()).isEqualTo(2L); // 최신순 정렬 확인
+		assertThat(results.get(1).getVersionId()).isEqualTo(1L);
+	}
 }

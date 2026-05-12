@@ -2,6 +2,9 @@ package io.envio.core.domain.project.entity;
 
 import java.time.LocalDateTime;
 
+import io.envio.core.common.entity.BaseEntity;
+
+import io.envio.core.domain.user.entity.UserDevice;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EncryptedKey {
+public class EncryptedKey extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

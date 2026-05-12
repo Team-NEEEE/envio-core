@@ -1,5 +1,6 @@
 package io.envio.core.domain.project.converter;
 
+import io.envio.core.domain.project.dto.response.ProjectHistoryResDto;
 import io.envio.core.domain.project.dto.response.ProjectPullResDto;
 import io.envio.core.domain.project.dto.response.ProjectPushResDto;
 import io.envio.core.domain.project.entity.History;
@@ -30,6 +31,17 @@ public class ProjectConverter {
 			.envName(history.getProject().getProjectName())
 			.versionId(history.getVersionId())
 			.parentVersionId(history.getBaseVersionId())
+			.build();
+	}
+
+	public static ProjectHistoryResDto toHistoryResponse(final History history) {
+		return ProjectHistoryResDto.builder()
+			.historyId(history.getHistoriesId())
+			.projectId(history.getProject().getId())
+			.versionId(history.getVersionId())
+			.baseVersionId(history.getBaseVersionId())
+			.githubId(history.getUserGithubId())
+			.createdAt(history.getCreatedAt())
 			.build();
 	}
 }
