@@ -85,8 +85,8 @@ class ProjectServiceIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("환경변수_새_버전을_생성한다")
-	void push_success() {
+	@DisplayName("최초_Push_시_parentVersionId가_0이면_성공한다")
+	void push_initial_success() {
 		// given
 		ProjectPushReqDto reqDto = ProjectPushReqDto.builder()
 			.githubUserId("user1")
@@ -104,6 +104,51 @@ class ProjectServiceIntegrationTest {
 	}
 
 	@Test
+	@DisplayName("최초_Push_시_parentVersionId가_0이_아니면_예외가_발생한다")
+	void push_initial_fails_when_not_zero() {
+		// given
+		ProjectPushReqDto reqDto = ProjectPushReqDto.builder()
+			.githubUserId("user1")
+			.encryptedEnvironment(Map.of("key", "secret"))
+			.parentVersionId(100L) // 최초인데 100을 보냄
+			.build();
+
+		// when & then
+		assertThatThrownBy(() -> projectCommandService.push(savedProject.getId(), reqDto))
+			.isInstanceOf(ProjectException.class)
+			.hasMessage(ErrorCode.VERSION_CONFLICT.getMessage());
+	}
+
+	@Test
+	@DisplayName("일반적인_Push_상황에서_새_버전을_생성한다")
+	void push_subsequent_success() {
+		// given
+		// 1. 첫 번째 push
+		History firstHistory = History.builder()
+			.project(savedProject)
+			.versionId(1L)
+			.baseVersionId(0L)
+			.build();
+		historyRepository.save(firstHistory);
+		savedProject.updateVersion(1L);
+
+		// 2. 두 번째 push 요청
+		ProjectPushReqDto reqDto = ProjectPushReqDto.builder()
+			.githubUserId("user1")
+			.encryptedEnvironment(Map.of("key", "new-secret"))
+			.parentVersionId(1L)
+			.build();
+
+		// when
+		History result = projectCommandService.push(savedProject.getId(), reqDto);
+
+		// then
+		assertThat(result.getVersionId()).isEqualTo(2L);
+		assertThat(result.getBaseVersionId()).isEqualTo(1L);
+		assertThat(savedProject.getVersionId()).isEqualTo(2L);
+	}
+
+	@Test
 	@DisplayName("버전_충돌_시_예외가_발생한다")
 	void push_throwsException_whenVersionConflict() {
 		// given
@@ -118,12 +163,28 @@ class ProjectServiceIntegrationTest {
 		ProjectPushReqDto reqDto = ProjectPushReqDto.builder()
 			.githubUserId("user1")
 			.encryptedEnvironment(Map.of("key", "secret"))
-			.parentVersionId(0L) // 서버는 1인데 0을 보냄
+			.parentVersionId(0L) // 서버는 이미 1인데 0을 기준으로 push 시도
 			.build();
 
 		// when & then
 		assertThatThrownBy(() -> projectCommandService.push(savedProject.getId(), reqDto))
 			.isInstanceOf(ProjectException.class)
 			.hasMessage(ErrorCode.VERSION_CONFLICT.getMessage());
+	}
+
+	@Test
+	@DisplayName("존재하지_않는_프로젝트에_Push_시_예외가_발생한다")
+	void push_fails_when_project_not_found() {
+		// given
+		ProjectPushReqDto reqDto = ProjectPushReqDto.builder()
+			.githubUserId("user1")
+			.encryptedEnvironment(Map.of("key", "secret"))
+			.parentVersionId(0L)
+			.build();
+
+		// when & then
+		assertThatThrownBy(() -> projectCommandService.push(999L, reqDto))
+			.isInstanceOf(ProjectException.class)
+			.hasMessage(ErrorCode.PROJECT_NOT_FOUND.getMessage());
 	}
 }
