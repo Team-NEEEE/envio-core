@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,6 +43,9 @@ public class Project {
 
 	@Column(name = "version_id")
 	private Long versionId;
+
+	@Version
+	private Long version;
 
 	@Column(name = "githubApp_id")
 	private String githubAppId;

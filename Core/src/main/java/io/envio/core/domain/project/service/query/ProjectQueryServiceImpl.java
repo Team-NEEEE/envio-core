@@ -21,7 +21,10 @@ public class ProjectQueryServiceImpl implements ProjectQueryService {
 	private final HistoryRepository historyRepository;
 
 	@Override
-	public History getLatestHistory(final Long projectId) {
+	public History getLatestHistory(final Long projectId, final String githubUserId) {
+		// TODO: P1.2 - 해당 githubUserId가 projectId에 접근 권한이 있는지 검증하는 로직 필요
+		// 현재는 멤버십 테이블이 없으므로 식별용으로만 활용
+
 		return historyRepository.findFirstByProjectIdOrderByVersionIdDesc(projectId)
 			.orElseThrow(() -> new ProjectException(ErrorCode.ENVIRONMENT_VERSION_NOT_INITIALIZED));
 	}

@@ -31,11 +31,19 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
 
 		// 최신 버전 확인 (충돌 체크)
 		historyRepository.findFirstByProjectIdOrderByVersionIdDesc(projectId)
-			.ifPresent(latest -> {
-				if (!latest.getVersionId().equals(reqDto.parentVersionId())) {
-					throw new ProjectException(ErrorCode.VERSION_CONFLICT);
+			.ifPresentOrElse(
+				latest -> {
+					if (!latest.getVersionId().equals(reqDto.parentVersionId())) {
+						throw new ProjectException(ErrorCode.VERSION_CONFLICT);
+					}
+				},
+				() -> {
+					// 최초 push는 parentVersionId가 0이어야 함
+					if (!reqDto.parentVersionId().equals(0L)) {
+						throw new ProjectException(ErrorCode.VERSION_CONFLICT);
+					}
 				}
-			});
+			);
 
 		// 새로운 버전 번호 계산
 		Long nextVersionId = reqDto.parentVersionId() + 1;

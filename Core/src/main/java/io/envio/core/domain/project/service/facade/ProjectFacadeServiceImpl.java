@@ -1,6 +1,7 @@
 package io.envio.core.domain.project.service.facade;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.envio.core.domain.project.converter.ProjectConverter;
 import io.envio.core.domain.project.dto.request.ProjectPushReqDto;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 
@@ -25,7 +27,7 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 	@Override
 	public ProjectPullResDto pull(final Long projectId, final String githubUserId) {
 		log.info("[Project] 최신 환경변수 조회 요청 - projectId: {}, githubUserId: {}", projectId, githubUserId);
-		History history = projectQueryService.getLatestHistory(projectId);
+		History history = projectQueryService.getLatestHistory(projectId, githubUserId);
 		return ProjectConverter.toPullResponse(history, "최신 환경변수 조회에 성공했습니다.");
 	}
 

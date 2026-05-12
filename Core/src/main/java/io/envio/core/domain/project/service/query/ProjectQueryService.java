@@ -4,5 +4,5 @@ import io.envio.core.domain.project.entity.History;
 
 public interface ProjectQueryService {
 
-	History getLatestHistory(Long projectId);
+	History getLatestHistory(Long projectId, String githubUserId);
 }

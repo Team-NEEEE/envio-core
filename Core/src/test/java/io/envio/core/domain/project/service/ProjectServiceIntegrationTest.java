@@ -68,7 +68,7 @@ class ProjectServiceIntegrationTest {
 		historyRepository.save(history);
 
 		// when
-		History result = projectQueryService.getLatestHistory(savedProject.getId());
+		History result = projectQueryService.getLatestHistory(savedProject.getId(), "user1");
 
 		// then
 		assertThat(result.getVersionId()).isEqualTo(1L);
@@ -79,7 +79,7 @@ class ProjectServiceIntegrationTest {
 	@DisplayName("이력이_없는_경우_조회_시_예외가_발생한다")
 	void getLatestHistory_throwsException_whenEmpty() {
 		// when & then
-		assertThatThrownBy(() -> projectQueryService.getLatestHistory(savedProject.getId()))
+		assertThatThrownBy(() -> projectQueryService.getLatestHistory(savedProject.getId(), "user1"))
 			.isInstanceOf(ProjectException.class)
 			.hasMessage(ErrorCode.ENVIRONMENT_VERSION_NOT_INITIALIZED.getMessage());
 	}
