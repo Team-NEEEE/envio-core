@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +44,9 @@ public class Project {
 	@Column(name = "version_id")
 	private Long versionId;
 
+	@Version
+	private Long version;
+
 	@Column(name = "githubApp_id")
 	private String githubAppId;
 
@@ -51,6 +55,11 @@ public class Project {
 
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
+
+	public void updateVersion(Long newVersionId) {
+		this.versionId = newVersionId;
+		this.updatedAt = LocalDateTime.now();
+	}
 
 	// UserProject와의 1:N 관계
 	// 중간 테이블을 만들었음으로 이거 써도되고 안써도 댐
