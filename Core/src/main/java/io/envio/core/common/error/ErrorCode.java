@@ -27,7 +27,14 @@ public enum ErrorCode {
 	 * User Error (US-xxx)
 	 */
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "US-001", "사용자를 찾을 수 없습니다."),
-	USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "US-002", "이미 존재하는 사용자입니다.");
+	USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "US-002", "이미 존재하는 사용자입니다."),
+
+	/**
+	 * Project Error (PR-xxx)
+	 */
+	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "PR-001", "프로젝트를 찾을 수 없습니다."),
+	ENVIRONMENT_VERSION_NOT_INITIALIZED(HttpStatus.UNPROCESSABLE_ENTITY, "PR-002", "해당 프로젝트에 등록된 환경변수 버전이 없습니다."),
+	VERSION_CONFLICT(HttpStatus.CONFLICT, "PR-003", "서버의 최신 버전과 요청한 기준 버전이 일치하지 않습니다. 먼저 pull을 수행한 뒤 다시 push해 주세요.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

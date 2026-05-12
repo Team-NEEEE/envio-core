@@ -52,6 +52,11 @@ public class Project {
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
+	public void updateVersion(Long newVersionId) {
+		this.versionId = newVersionId;
+		this.updatedAt = LocalDateTime.now();
+	}
+
 	// UserProject와의 1:N 관계
 	// 중간 테이블을 만들었음으로 이거 써도되고 안써도 댐
 	@Builder.Default
