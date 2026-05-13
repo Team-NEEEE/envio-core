@@ -12,8 +12,8 @@ import io.envio.core.domain.project.entity.Project;
 
 public interface EncryptedKeyRepository extends JpaRepository<EncryptedKey, Long> {
 
-	@Query("SELECT DISTINCT e.project FROM EncryptedKey e " +
-		"WHERE e.userDevice.user.id = :userId AND e.active = true")
+	@Query(
+		"SELECT DISTINCT e.project FROM EncryptedKey e " + "WHERE e.userDevice.user.id = :userId AND e.active = true")
 	List<Project> findProjectsByUserId(@Param("userId") Long userId);
 
 	List<EncryptedKey> findByProjectId(Long projectId);

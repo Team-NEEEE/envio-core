@@ -12,4 +12,6 @@ public interface ProjectQueryService {
 	List<History> getProjectHistories(Long projectId);
 
 	List<Project> getUserProjects(Long userId);
+
+	Project findById(Long projectId);
 }

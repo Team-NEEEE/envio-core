@@ -49,4 +49,11 @@ public class ProjectQueryServiceImpl implements ProjectQueryService {
 		log.info("[Project] 사용자의 프로젝트 목록 조회 - userId: {}", userId);
 		return encryptedKeyRepository.findProjectsByUserId(userId);
 	}
+
+	@Override
+	public Project findById(final Long projectId) {
+		log.info("[Project] 프로젝트 단건 조회 - projectId: {}", projectId);
+		return projectRepository.findById(projectId)
+			.orElseThrow(() -> new ProjectException(ErrorCode.PROJECT_NOT_FOUND));
+	}
 }

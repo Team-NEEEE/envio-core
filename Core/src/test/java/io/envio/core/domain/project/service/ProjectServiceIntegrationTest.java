@@ -21,6 +21,7 @@ import io.envio.core.domain.project.exception.ProjectException;
 import io.envio.core.domain.project.repository.HistoryRepository;
 import io.envio.core.domain.project.repository.ProjectRepository;
 import io.envio.core.domain.project.service.command.ProjectCommandService;
+import io.envio.core.domain.project.service.facade.ProjectFacadeService;
 import io.envio.core.domain.project.service.query.ProjectQueryService;
 
 @SpringBootTest
@@ -33,6 +34,9 @@ class ProjectServiceIntegrationTest {
 
 	@Autowired
 	private ProjectQueryService projectQueryService;
+
+	@Autowired
+	private ProjectFacadeService projectFacadeService;
 
 	@Autowired
 	private ProjectRepository projectRepository;
@@ -214,5 +218,17 @@ class ProjectServiceIntegrationTest {
 		assertThat(results).hasSize(2);
 		assertThat(results.get(0).getVersionId()).isEqualTo(2L); // 최신순 정렬 확인
 		assertThat(results.get(1).getVersionId()).isEqualTo(1L);
+	}
+
+	@Test
+	@DisplayName("프로젝트_상세_정보를_조회한다")
+	void getProjectDetail_success() {
+		// when
+		io.envio.core.domain.project.dto.response.ProjectDetailResDto result = projectFacadeService.getProjectDetail(savedProject.getId());
+
+		// then
+		assertThat(result.projectId()).isEqualTo(savedProject.getId());
+		assertThat(result.projectName()).isEqualTo("test-project");
+		assertThat(result.organizationName()).isEqualTo("test-org");
 	}
 }

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.envio.core.domain.project.converter.ProjectConverter;
 import io.envio.core.domain.project.dto.request.ProjectPushReqDto;
+import io.envio.core.domain.project.dto.response.ProjectDetailResDto;
 import io.envio.core.domain.project.dto.response.ProjectHistoryResDto;
 import io.envio.core.domain.project.dto.response.ProjectPullResDto;
 import io.envio.core.domain.project.dto.response.ProjectPushResDto;
@@ -59,5 +60,12 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 		return projects.stream()
 			.map(ProjectConverter::toProjectResDto)
 			.toList();
+	}
+
+	@Override
+	public ProjectDetailResDto getProjectDetail(final Long projectId) {
+		log.info("[Project] 상세 정보 조회 요청 - projectId: {}", projectId);
+		Project project = projectQueryService.findById(projectId);
+		return ProjectConverter.toProjectDetailResDto(project);
 	}
 }
