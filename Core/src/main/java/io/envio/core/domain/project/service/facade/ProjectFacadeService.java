@@ -6,6 +6,7 @@ import io.envio.core.domain.project.dto.request.ProjectPushReqDto;
 import io.envio.core.domain.project.dto.response.ProjectHistoryResDto;
 import io.envio.core.domain.project.dto.response.ProjectPullResDto;
 import io.envio.core.domain.project.dto.response.ProjectPushResDto;
+import io.envio.core.domain.project.dto.response.ProjectResDto;
 
 public interface ProjectFacadeService {
 
@@ -14,4 +15,6 @@ public interface ProjectFacadeService {
 	ProjectPushResDto push(Long projectId, ProjectPushReqDto reqDto);
 
 	List<ProjectHistoryResDto> getProjectHistory(Long projectId);
+
+	List<ProjectResDto> getUserProjects(Long userId);
 }

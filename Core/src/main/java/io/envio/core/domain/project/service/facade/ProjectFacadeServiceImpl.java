@@ -10,7 +10,9 @@ import io.envio.core.domain.project.dto.request.ProjectPushReqDto;
 import io.envio.core.domain.project.dto.response.ProjectHistoryResDto;
 import io.envio.core.domain.project.dto.response.ProjectPullResDto;
 import io.envio.core.domain.project.dto.response.ProjectPushResDto;
+import io.envio.core.domain.project.dto.response.ProjectResDto;
 import io.envio.core.domain.project.entity.History;
+import io.envio.core.domain.project.entity.Project;
 import io.envio.core.domain.project.service.command.ProjectCommandService;
 import io.envio.core.domain.project.service.query.ProjectQueryService;
 
@@ -47,6 +49,15 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 		List<History> histories = projectQueryService.getProjectHistories(projectId);
 		return histories.stream()
 			.map(ProjectConverter::toHistoryResponse)
+			.toList();
+	}
+
+	@Override
+	public List<ProjectResDto> getUserProjects(final Long userId) {
+		log.info("[Project] 사용자의 프로젝트 목록 조회 요청 - userId: {}", userId);
+		List<Project> projects = projectQueryService.getUserProjects(userId);
+		return projects.stream()
+			.map(ProjectConverter::toProjectResDto)
 			.toList();
 	}
 }
