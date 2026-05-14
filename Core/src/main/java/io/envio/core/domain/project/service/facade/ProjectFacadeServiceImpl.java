@@ -1,13 +1,19 @@
 package io.envio.core.domain.project.service.facade;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.envio.core.domain.project.converter.ProjectConverter;
 import io.envio.core.domain.project.dto.request.ProjectPushReqDto;
+import io.envio.core.domain.project.dto.response.ProjectDetailResDto;
+import io.envio.core.domain.project.dto.response.ProjectHistoryResDto;
 import io.envio.core.domain.project.dto.response.ProjectPullResDto;
 import io.envio.core.domain.project.dto.response.ProjectPushResDto;
+import io.envio.core.domain.project.dto.response.ProjectResDto;
 import io.envio.core.domain.project.entity.History;
+import io.envio.core.domain.project.entity.Project;
 import io.envio.core.domain.project.service.command.ProjectCommandService;
 import io.envio.core.domain.project.service.query.ProjectQueryService;
 
@@ -36,5 +42,21 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 		log.info("[Project] 환경변수 업데이트 요청 - projectId: {}, githubUserId: {}", projectId, reqDto.githubUserId());
 		History history = projectCommandService.push(projectId, reqDto);
 		return ProjectConverter.toPushResponse(history, "환경변수 새 버전 생성에 성공했습니다.");
+	}
+
+	@Override
+	public List<ProjectHistoryResDto> getProjectHistory(final Long projectId) {
+		log.info("[Project] 히스토리 조회 요청 - projectId: {}", projectId);
+		List<History> histories = projectQueryService.getProjectHistories(projectId);
+		return histories.stream()
+			.map(ProjectConverter::toHistoryResponse)
+			.toList();
+	}
+
+	@Override
+	public ProjectDetailResDto getProjectDetail(final Long projectId) {
+		log.info("[Project] 상세 정보 조회 요청 - projectId: {}", projectId);
+		Project project = projectQueryService.findById(projectId);
+		return ProjectConverter.toProjectDetailResDto(project);
 	}
 }

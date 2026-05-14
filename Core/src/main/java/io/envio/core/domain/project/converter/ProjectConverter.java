@@ -1,13 +1,39 @@
 package io.envio.core.domain.project.converter;
 
+import io.envio.core.domain.project.dto.response.ProjectDetailResDto;
+import io.envio.core.domain.project.dto.response.ProjectHistoryResDto;
 import io.envio.core.domain.project.dto.response.ProjectPullResDto;
 import io.envio.core.domain.project.dto.response.ProjectPushResDto;
+import io.envio.core.domain.project.dto.response.ProjectResDto;
 import io.envio.core.domain.project.entity.History;
+import io.envio.core.domain.project.entity.Project;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class ProjectConverter {
+
+	public static ProjectResDto toProjectResDto(final Project project) {
+		return ProjectResDto.builder()
+			.projectId(project.getId())
+			.projectName(project.getProjectName())
+			.description(project.getDescription())
+			.versionId(project.getVersionId())
+			.build();
+	}
+
+	public static ProjectDetailResDto toProjectDetailResDto(final Project project) {
+		return ProjectDetailResDto.builder()
+			.projectId(project.getId())
+			.projectName(project.getProjectName())
+			.organizationName(project.getOrganizationName())
+			.description(project.getDescription())
+			.versionId(project.getVersionId())
+			.githubAppId(project.getGithubAppId())
+			.createdAt(project.getCreatedAt())
+			.updatedAt(project.getUpdatedAt())
+			.build();
+	}
 
 	public static ProjectPullResDto toPullResponse(final History history, final String message) {
 		return ProjectPullResDto.builder()
@@ -30,6 +56,17 @@ public class ProjectConverter {
 			.envName(history.getProject().getProjectName())
 			.versionId(history.getVersionId())
 			.parentVersionId(history.getBaseVersionId())
+			.build();
+	}
+
+	public static ProjectHistoryResDto toHistoryResponse(final History history) {
+		return ProjectHistoryResDto.builder()
+			.historyId(history.getHistoriesId())
+			.projectId(history.getProject().getId())
+			.versionId(history.getVersionId())
+			.baseVersionId(history.getBaseVersionId())
+			.githubId(history.getUserGithubId())
+			.createdAt(history.getCreatedAt())
 			.build();
 	}
 }

@@ -2,6 +2,9 @@ package io.envio.core.domain.project.entity;
 
 import java.time.LocalDateTime;
 
+import io.envio.core.common.entity.BaseEntity;
+import io.envio.core.domain.user.entity.UserDevice;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EncryptedKey {
+public class EncryptedKey extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +39,11 @@ public class EncryptedKey {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_device_id")
+	@JoinColumn(name = "user_device_id", nullable = false)
 	private UserDevice userDevice;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "project_id")
+	@JoinColumn(name = "project_id", nullable = false)
 	private Project project;
 
 	@Column(name = "encrypted_key")
@@ -48,10 +51,4 @@ public class EncryptedKey {
 
 	@Column(name = "active", nullable = false)
 	private boolean active;
-
-	@Column(name = "created_at")
-	private LocalDateTime createdAt;
-
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
 }

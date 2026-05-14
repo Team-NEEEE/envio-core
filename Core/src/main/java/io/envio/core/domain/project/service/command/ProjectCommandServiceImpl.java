@@ -55,8 +55,6 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
 			.baseVersionId(reqDto.parentVersionId())
 			.userGithubId(reqDto.githubUserId())
 			.encryptedEnvironment(reqDto.encryptedEnvironment())
-			.createdAt(java.time.LocalDateTime.now())
-			.updatedAt(java.time.LocalDateTime.now())
 			.build();
 
 		// 프로젝트의 최신 버전 업데이트

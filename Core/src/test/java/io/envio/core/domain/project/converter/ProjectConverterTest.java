@@ -30,8 +30,6 @@ class ProjectConverterTest {
 			.project(project)
 			.versionId(7L)
 			.encryptedEnvironment(Map.of("key", "value"))
-			.createdAt(LocalDateTime.now())
-			.updatedAt(LocalDateTime.now())
 			.build();
 
 		// when
