@@ -39,11 +39,11 @@ public class EncryptedKey extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_device_id")
+	@JoinColumn(name = "user_device_id", nullable = false)
 	private UserDevice userDevice;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "project_id")
+	@JoinColumn(name = "project_id", nullable = false)
 	private Project project;
 
 	@Column(name = "encrypted_key")
@@ -51,10 +51,4 @@ public class EncryptedKey extends BaseEntity {
 
 	@Column(name = "active", nullable = false)
 	private boolean active;
-
-	@Column(name = "created_at")
-	private LocalDateTime createdAt;
-
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
 }

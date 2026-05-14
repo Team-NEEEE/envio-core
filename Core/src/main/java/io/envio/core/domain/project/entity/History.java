@@ -53,10 +53,4 @@ public class History extends BaseEntity {
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "encrypted_environment", columnDefinition = "jsonb")
 	private Map<String, Object> encryptedEnvironment;
-
-	@Column(name = "created_at")
-	private LocalDateTime createdAt;
-
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
 }

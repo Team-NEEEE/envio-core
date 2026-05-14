@@ -37,7 +37,6 @@ class ProjectHistoryIntegrationTest {
 			.projectName("Project-A")
 			.organizationName("Org-1")
 			.versionId(0L)
-			.createdAt(LocalDateTime.now())
 			.build());
 
 		// 2. 프로젝트 B 생성 (데이터 격리 확인용)
@@ -45,7 +44,6 @@ class ProjectHistoryIntegrationTest {
 			.projectName("Project-B")
 			.organizationName("Org-1")
 			.versionId(0L)
-			.createdAt(LocalDateTime.now())
 			.build());
 
 		// 3. 프로젝트 A에 대해 3번의 연속적인 Push 수행 (v1 -> v2 -> v3)

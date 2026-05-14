@@ -81,7 +81,6 @@ class FullSystemFlowIntegrationTest {
 			.organizationName("Envio-Team")
 			.description("Core API Server for Envio")
 			.versionId(0L)
-			.createdAt(LocalDateTime.now())
 			.build());
 
 		// [Step 4] 기기들과 프로젝트 연동 (암호화 키 할당)

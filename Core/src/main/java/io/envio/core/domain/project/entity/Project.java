@@ -52,15 +52,8 @@ public class Project extends BaseEntity {
 	@Column(name = "githubApp_id")
 	private String githubAppId;
 
-	@Column(name = "created_at")
-	private LocalDateTime createdAt;
-
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
-
 	public void updateVersion(Long newVersionId) {
 		this.versionId = newVersionId;
-		this.updatedAt = LocalDateTime.now();
 	}
 
 	// UserProject와의 1:N 관계

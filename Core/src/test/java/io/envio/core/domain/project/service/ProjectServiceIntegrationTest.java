@@ -52,7 +52,6 @@ class ProjectServiceIntegrationTest {
 			.projectName("test-project")
 			.organizationName("test-org")
 			.versionId(0L)
-			.createdAt(LocalDateTime.now())
 			.build();
 		savedProject = projectRepository.save(project);
 	}
@@ -67,7 +66,6 @@ class ProjectServiceIntegrationTest {
 			.baseVersionId(0L)
 			.userGithubId("user1")
 			.encryptedEnvironment(Map.of("data", "encrypted"))
-			.createdAt(LocalDateTime.now())
 			.build();
 		historyRepository.save(history);
 
@@ -200,13 +198,11 @@ class ProjectServiceIntegrationTest {
 			.project(savedProject)
 			.versionId(1L)
 			.userGithubId("user1")
-			.createdAt(LocalDateTime.now())
 			.build();
 		History h2 = History.builder()
 			.project(savedProject)
 			.versionId(2L)
 			.userGithubId("user2")
-			.createdAt(LocalDateTime.now().plusMinutes(1))
 			.build();
 		historyRepository.save(h1);
 		historyRepository.save(h2);

@@ -54,15 +54,6 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 	}
 
 	@Override
-	public List<ProjectResDto> getUserProjects(final Long userId) {
-		log.info("[Project] 사용자의 프로젝트 목록 조회 요청 - userId: {}", userId);
-		List<Project> projects = projectQueryService.getUserProjects(userId);
-		return projects.stream()
-			.map(ProjectConverter::toProjectResDto)
-			.toList();
-	}
-
-	@Override
 	public ProjectDetailResDto getProjectDetail(final Long projectId) {
 		log.info("[Project] 상세 정보 조회 요청 - projectId: {}", projectId);
 		Project project = projectQueryService.findById(projectId);

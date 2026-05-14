@@ -71,13 +71,11 @@ class UserProjectIntegrationTest {
 		Project projectX = projectRepository.save(Project.builder()
 			.projectName("Project-X")
 			.versionId(1L)
-			.createdAt(LocalDateTime.now())
 			.build());
 
 		Project projectY = projectRepository.save(Project.builder()
 			.projectName("Project-Y")
 			.versionId(1L)
-			.createdAt(LocalDateTime.now())
 			.build());
 
 		// 4. 기기별 프로젝트 키 할당 (중복 상황 연출)

@@ -17,7 +17,5 @@ public interface ProjectFacadeService {
 
 	List<ProjectHistoryResDto> getProjectHistory(Long projectId);
 
-	List<ProjectResDto> getUserProjects(Long userId);
-
 	ProjectDetailResDto getProjectDetail(Long projectId);
 }
