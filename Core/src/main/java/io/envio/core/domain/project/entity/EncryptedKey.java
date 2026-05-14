@@ -51,4 +51,9 @@ public class EncryptedKey extends BaseEntity {
 
 	@Column(name = "active", nullable = false)
 	private boolean active;
+
+	public void updateEncryptedKey(final String encryptedKey) {
+		this.encryptedKey = encryptedKey;
+		this.active = true;
+	}
 }
