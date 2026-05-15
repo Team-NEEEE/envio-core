@@ -18,10 +18,13 @@ import io.envio.core.domain.project.client.GithubRepositoryMember;
 import io.envio.core.domain.project.client.GithubRepositoryMemberClient;
 import io.envio.core.domain.project.client.ProjectRole;
 import io.envio.core.domain.project.dto.request.ProjectCreateReqDto;
+import io.envio.core.domain.project.dto.request.ProjectLinkReqDto;
 import io.envio.core.domain.project.dto.request.ProjectWrappedKeyReqDto;
 import io.envio.core.domain.project.dto.request.ProjectWrappedKeySaveReqDto;
 import io.envio.core.domain.project.dto.response.ProjectCreateMemberResDto;
 import io.envio.core.domain.project.dto.response.ProjectCreateResDto;
+import io.envio.core.domain.project.dto.response.ProjectLinkProjectResDto;
+import io.envio.core.domain.project.dto.response.ProjectLinkResDto;
 import io.envio.core.domain.project.dto.response.ProjectWrappedKeySaveResDto;
 import io.envio.core.domain.project.entity.EncryptedKey;
 import io.envio.core.domain.project.entity.Project;
@@ -42,7 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 public class CliProjectFacadeServiceImpl implements CliProjectFacadeService {
 
 	private static final String CREATE_SUCCESS_MESSAGE = "프로젝트 생성에 성공했습니다.";
+	private static final String LINK_SUCCESS_MESSAGE = "프로젝트 연동에 성공했습니다.";
 	private static final String WRAPPED_KEYS_SUCCESS_MESSAGE = "프로젝트 마스터 키 분배 등록에 성공했습니다.";
+	private static final String JOIN_STATUS_APPROVED = "APPROVED";
 
 	private final ProjectRepository projectRepository;
 	private final UserDeviceRepository userDeviceRepository;
@@ -75,7 +80,7 @@ public class CliProjectFacadeServiceImpl implements CliProjectFacadeService {
 		List<ProjectCreateMemberResDto> members = toMemberResponses(eligibleRoles);
 
 		log.info(
-			"[Project] CLI 프로젝트 생성 완료 - projectId: {}, repository: {}",
+			"[Project] CLI project create completed - projectId: {}, repository: {}",
 			project.getId(),
 			repositoryRef.githubRepoName()
 		);
@@ -86,6 +91,51 @@ public class CliProjectFacadeServiceImpl implements CliProjectFacadeService {
 			.githubRepoName(repositoryRef.githubRepoName())
 			.installationId(repositoryAccess.installationId())
 			.members(members)
+			.build();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ProjectLinkResDto linkProject(final ProjectLinkReqDto reqDto) {
+		UserDevice requesterDevice = validateDevice(reqDto.deviceId(), reqDto.publicKey());
+		validateRequesterGithubId(requesterDevice, reqDto.userGithubId());
+
+		RepositoryRef repositoryRef = RepositoryRef.parse(reqDto.repositoryUrl());
+		repositoryRef.validateOptionalParts(reqDto.owner(), reqDto.repoName());
+
+		Project project = projectRepository.findByOrganizationNameAndProjectName(
+				repositoryRef.owner(),
+				repositoryRef.repoName()
+			)
+			.orElseThrow(() -> new ProjectException(ErrorCode.PROJECT_NOT_FOUND));
+
+		GithubRepositoryAccess repositoryAccess = githubRepositoryMemberClient.getRepositoryAccess(
+			repositoryRef.owner(),
+			repositoryRef.repoName()
+		);
+		validateRequesterIsRepositoryMember(requesterDevice, repositoryAccess.members());
+
+		EncryptedKey encryptedKey = encryptedKeyRepository.findByUserDeviceIdAndProjectIdAndActiveTrue(
+				requesterDevice.getId(),
+				project.getId()
+			)
+			.orElseThrow(() -> new ProjectException(ErrorCode.JOIN_STATUS_PENDING));
+
+		log.info(
+			"[Project] CLI project link completed - projectId: {}, deviceId: {}",
+			project.getId(),
+			requesterDevice.getId()
+		);
+		return ProjectLinkResDto.builder()
+			.message(LINK_SUCCESS_MESSAGE)
+			.project(ProjectLinkProjectResDto.builder()
+				.projectId(project.getId())
+				.projectName(project.getProjectName())
+				.githubRepoName(project.getProjectName())
+				.organizationName(project.getOrganizationName())
+				.build())
+			.wrappedMasterKey(encryptedKey.getEncryptedKey())
+			.joinStatus(JOIN_STATUS_APPROVED)
 			.build();
 	}
 
@@ -118,7 +168,11 @@ public class CliProjectFacadeServiceImpl implements CliProjectFacadeService {
 			wrappedKeyByDeviceId.get(targetDevice.getId()).encryptedKey()
 		));
 
-		log.info("[Project] CLI 프로젝트 마스터 키 분배 등록 완료 - projectId: {}, count: {}", projectId, targetDevices.size());
+		log.info(
+			"[Project] CLI wrapped key save completed - projectId: {}, count: {}",
+			projectId,
+			targetDevices.size()
+		);
 		return ProjectWrappedKeySaveResDto.builder()
 			.message(WRAPPED_KEYS_SUCCESS_MESSAGE)
 			.projectId(projectId)
@@ -129,6 +183,12 @@ public class CliProjectFacadeServiceImpl implements CliProjectFacadeService {
 	private UserDevice validateDevice(final Long deviceId, final String publicKey) {
 		return userDeviceRepository.findByIdAndPublicKey(deviceId, publicKey)
 			.orElseThrow(() -> new ProjectException(ErrorCode.ACCESS_DENIED));
+	}
+
+	private void validateRequesterGithubId(final UserDevice requesterDevice, final String userGithubId) {
+		if (!requesterDevice.getUser().getGithubId().equals(userGithubId)) {
+			throw new ProjectException(ErrorCode.ACCESS_DENIED);
+		}
 	}
 
 	private Map<String, ProjectRole> getEligibleRoles(final Collection<GithubRepositoryMember> members) {
@@ -151,6 +211,18 @@ public class CliProjectFacadeServiceImpl implements CliProjectFacadeService {
 	) {
 		String requesterGithubId = requesterDevice.getUser().getGithubId();
 		if (!eligibleRoles.containsKey(requesterGithubId)) {
+			throw new ProjectException(ErrorCode.ACCESS_DENIED);
+		}
+	}
+
+	private void validateRequesterIsRepositoryMember(
+		final UserDevice requesterDevice,
+		final Collection<GithubRepositoryMember> members
+	) {
+		String requesterGithubId = requesterDevice.getUser().getGithubId();
+		boolean isMember = members.stream()
+			.anyMatch(member -> member.githubId().equals(requesterGithubId));
+		if (!isMember) {
 			throw new ProjectException(ErrorCode.ACCESS_DENIED);
 		}
 	}
@@ -256,6 +328,19 @@ public class CliProjectFacadeServiceImpl implements CliProjectFacadeService {
 				throw new ProjectException(ErrorCode.BAD_REQUEST);
 			}
 			return new RepositoryRef(parts[0], parts[1]);
+		}
+
+		private void validateOptionalParts(final String requestedOwner, final String requestedRepoName) {
+			if (hasText(requestedOwner) && !owner.equals(requestedOwner)) {
+				throw new ProjectException(ErrorCode.BAD_REQUEST);
+			}
+			if (hasText(requestedRepoName) && !repoName.equals(requestedRepoName)) {
+				throw new ProjectException(ErrorCode.BAD_REQUEST);
+			}
+		}
+
+		private boolean hasText(final String value) {
+			return value != null && !value.isBlank();
 		}
 
 		private String githubRepoName() {

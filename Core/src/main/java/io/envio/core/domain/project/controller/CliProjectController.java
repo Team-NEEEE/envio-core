@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import io.envio.core.common.response.BaseResponse;
 import io.envio.core.common.util.ResponseUtils;
 import io.envio.core.domain.project.dto.request.ProjectCreateReqDto;
+import io.envio.core.domain.project.dto.request.ProjectLinkReqDto;
 import io.envio.core.domain.project.dto.request.ProjectWrappedKeySaveReqDto;
 import io.envio.core.domain.project.dto.response.ProjectCreateResDto;
+import io.envio.core.domain.project.dto.response.ProjectLinkResDto;
 import io.envio.core.domain.project.dto.response.ProjectWrappedKeySaveResDto;
 import io.envio.core.domain.project.service.facade.CliProjectFacadeService;
 
@@ -21,14 +23,17 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "CLI Project", description = "CLI 프로젝트 생성 및 마스터 키 분배 API")
+@Tag(name = "CLI Project", description = "CLI project create, link, and wrapped key APIs")
 @RestController
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class CliProjectController {
 
 	private final CliProjectFacadeService cliProjectFacadeService;
 
-	@Operation(summary = "CLI 프로젝트 생성", description = "GitHub 저장소 URL 기준으로 프로젝트를 생성하고 키 분배 대상 기기를 반환합니다.")
+	@Operation(
+		summary = "CLI project create",
+		description = "Creates a project and returns target devices for key wrapping."
+	)
 	@PostMapping("/api/v1/cli/create")
 	public ResponseEntity<BaseResponse<ProjectCreateResDto>> createProject(
 		@Valid @RequestBody final ProjectCreateReqDto reqDto
@@ -37,7 +42,22 @@ public class CliProjectController {
 		return ResponseUtils.ok(response);
 	}
 
-	@Operation(summary = "CLI 프로젝트 마스터 키 분배 등록", description = "팀원별 공개키로 암호화한 프로젝트 마스터 키를 저장합니다.")
+	@Operation(
+		summary = "CLI project link",
+		description = "Links a local working directory and returns this device's wrapped master key."
+	)
+	@PostMapping("/api/core/projects/link")
+	public ResponseEntity<BaseResponse<ProjectLinkResDto>> linkProject(
+		@Valid @RequestBody final ProjectLinkReqDto reqDto
+	) {
+		ProjectLinkResDto response = cliProjectFacadeService.linkProject(reqDto);
+		return ResponseUtils.ok(response);
+	}
+
+	@Operation(
+		summary = "CLI wrapped key save",
+		description = "Saves project master keys wrapped for each target user device."
+	)
 	@PutMapping("/api/projects/{projectId}/wrapped-keys")
 	public ResponseEntity<BaseResponse<ProjectWrappedKeySaveResDto>> saveWrappedKeys(
 		@PathVariable final Long projectId,
