@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,11 +71,13 @@ class UserProjectIntegrationTest {
 		// 3. 프로젝트 2개 생성 (Project-X, Project-Y)
 		Project projectX = projectRepository.save(Project.builder()
 			.projectName("Project-X")
+			.organizationName("Org-X")
 			.versionId(1L)
 			.build());
 
 		Project projectY = projectRepository.save(Project.builder()
 			.projectName("Project-Y")
+			.organizationName("Org-Y")
 			.versionId(1L)
 			.build());
 
@@ -103,19 +106,18 @@ class UserProjectIntegrationTest {
 			.build());
 
 		// 5. 유저 파사드를 통해 GitHub ID로 프로젝트 목록 조회
-		List<ProjectResDto> myProjects = userFacadeService.getMyProjects(githubId);
+		Map<String, List<ProjectResDto>> myProjectsGrouped = userFacadeService.getMyProjects(githubId);
 
 		// 6. 검증
-		// Project-X는 기기가 2개지만 목록에는 1개만 나와야 함 (Distinct 확인)
-		// Project-Y는 기기가 1개라 당연히 1개 나옴
-		// 총 결과는 2개여야 함
-		assertThat(myProjects).hasSize(2);
-		
-		// 프로젝트 이름들이 정확히 포함되어 있는지 확인
-		List<String> projectNames = myProjects.stream()
-			.map(ProjectResDto::projectName)
-			.toList();
-		
-		assertThat(projectNames).containsExactlyInAnyOrder("Project-X", "Project-Y");
+		// 총 조직 수는 2개여야 함
+		assertThat(myProjectsGrouped).hasSize(2);
+		assertThat(myProjectsGrouped).containsKey("Org-X");
+		assertThat(myProjectsGrouped).containsKey("Org-Y");
+
+		// 각 조직 내 프로젝트 확인
+		assertThat(myProjectsGrouped.get("Org-X")).hasSize(1);
+		assertThat(myProjectsGrouped.get("Org-X").get(0).projectName()).isEqualTo("Project-X");
+		assertThat(myProjectsGrouped.get("Org-Y")).hasSize(1);
+		assertThat(myProjectsGrouped.get("Org-Y").get(0).projectName()).isEqualTo("Project-Y");
 	}
 }

@@ -1,6 +1,7 @@
 package io.envio.core.domain.user.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,12 +27,12 @@ public class UserController {
 
 	private final UserFacadeService userFacadeService;
 
-	@Operation(summary = "내 프로젝트 목록 조회", description = "현재 로그인한 사용자가 속한 프로젝트 목록을 조회합니다.")
+	@Operation(summary = "내 조직, 조직에 속하는 프로젝트 조회", description = "현재 로그인한 사용자가 속한 조직을 조회합니다.")
 	@GetMapping("/me/projects")
-	public ResponseEntity<BaseResponse<List<ProjectResDto>>> getMyProjects(
+	public ResponseEntity<BaseResponse<Map<String, List<ProjectResDto>>>> getMyProjects(
 		@RequestParam final String githubId
 	) {
-		List<ProjectResDto> response = userFacadeService.getMyProjects(githubId);
+		Map<String, List<ProjectResDto>> response = userFacadeService.getMyProjects(githubId);
 		return ResponseUtils.ok(response);
 	}
 }
