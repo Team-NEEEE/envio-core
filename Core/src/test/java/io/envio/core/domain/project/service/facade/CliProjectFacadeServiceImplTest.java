@@ -16,14 +16,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import io.envio.core.common.error.ErrorCode;
 import io.envio.core.domain.project.client.GithubRepositoryAccess;
 import io.envio.core.domain.project.client.GithubRepositoryMember;
 import io.envio.core.domain.project.client.GithubRepositoryMemberClient;
 import io.envio.core.domain.project.client.ProjectRole;
 import io.envio.core.domain.project.dto.request.ProjectCreateReqDto;
+import io.envio.core.domain.project.dto.request.ProjectLinkReqDto;
 import io.envio.core.domain.project.dto.request.ProjectWrappedKeyReqDto;
 import io.envio.core.domain.project.dto.request.ProjectWrappedKeySaveReqDto;
 import io.envio.core.domain.project.dto.response.ProjectCreateResDto;
+import io.envio.core.domain.project.dto.response.ProjectLinkResDto;
+import io.envio.core.domain.project.entity.EncryptedKey;
 import io.envio.core.domain.project.entity.Project;
 import io.envio.core.domain.project.exception.ProjectException;
 import io.envio.core.domain.project.repository.EncryptedKeyRepository;
@@ -142,6 +146,133 @@ class CliProjectFacadeServiceImplTest {
 			.isInstanceOf(ProjectException.class);
 	}
 
+	@Test
+	@DisplayName("linkProject는 저장소 URL로 프로젝트를 찾고 현재 기기의 wrapped master key를 반환한다")
+	void linkProject_success() {
+		// given
+		CliProjectFacadeServiceImpl service = createService();
+		UserDevice requesterDevice = userDevice(10L, 1L, "writer", "requester-public-key");
+		Project project = project(1L, "Team-NEEEE", "envio-cli");
+		EncryptedKey encryptedKey = encryptedKey(100L, project, requesterDevice, "wrapped-master-key");
+
+		when(userDeviceRepository.findByIdAndPublicKey(10L, "requester-public-key"))
+			.thenReturn(Optional.of(requesterDevice));
+		when(projectRepository.findByOrganizationNameAndProjectName("Team-NEEEE", "envio-cli"))
+			.thenReturn(Optional.of(project));
+		when(githubRepositoryMemberClient.getRepositoryAccess("Team-NEEEE", "envio-cli"))
+			.thenReturn(new GithubRepositoryAccess(12345678L, List.of(
+				new GithubRepositoryMember("writer", ProjectRole.WRITE),
+				new GithubRepositoryMember("reader", ProjectRole.READ)
+			)));
+		when(encryptedKeyRepository.findByUserDeviceIdAndProjectIdAndActiveTrue(10L, 1L))
+			.thenReturn(Optional.of(encryptedKey));
+
+		ProjectLinkReqDto reqDto = ProjectLinkReqDto.builder()
+			.publicKey("requester-public-key")
+			.deviceId(10L)
+			.userGithubId("writer")
+			.repositoryUrl("https://github.com/Team-NEEEE/envio-cli.git")
+			.owner("Team-NEEEE")
+			.repoName("envio-cli")
+			.build();
+
+		// when
+		ProjectLinkResDto response = service.linkProject(reqDto);
+
+		// then
+		assertThat(response.message()).isEqualTo("프로젝트 연동에 성공했습니다.");
+		assertThat(response.wrappedMasterKey()).isEqualTo("wrapped-master-key");
+		assertThat(response.joinStatus()).isEqualTo("APPROVED");
+		assertThat(response.project().projectId()).isEqualTo(1L);
+		assertThat(response.project().projectName()).isEqualTo("envio-cli");
+		assertThat(response.project().githubRepoName()).isEqualTo("envio-cli");
+		assertThat(response.project().organizationName()).isEqualTo("Team-NEEEE");
+	}
+
+	@Test
+	@DisplayName("linkProject는 요청 GitHub ID와 기기 소유자가 다르면 실패한다")
+	void linkProject_failsWhenGithubIdDoesNotMatchDeviceOwner() {
+		// given
+		CliProjectFacadeServiceImpl service = createService();
+		UserDevice requesterDevice = userDevice(10L, 1L, "writer", "requester-public-key");
+
+		when(userDeviceRepository.findByIdAndPublicKey(10L, "requester-public-key"))
+			.thenReturn(Optional.of(requesterDevice));
+
+		ProjectLinkReqDto reqDto = ProjectLinkReqDto.builder()
+			.publicKey("requester-public-key")
+			.deviceId(10L)
+			.userGithubId("other-user")
+			.repositoryUrl("https://github.com/Team-NEEEE/envio-cli.git")
+			.build();
+
+		// when, then
+		assertThatThrownBy(() -> service.linkProject(reqDto))
+			.isInstanceOf(ProjectException.class)
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.ACCESS_DENIED);
+	}
+
+	@Test
+	@DisplayName("linkProject는 URL에서 파싱한 owner/repoName과 요청 값이 다르면 실패한다")
+	void linkProject_failsWhenOptionalRepositoryPartsDoNotMatch() {
+		// given
+		CliProjectFacadeServiceImpl service = createService();
+		UserDevice requesterDevice = userDevice(10L, 1L, "writer", "requester-public-key");
+
+		when(userDeviceRepository.findByIdAndPublicKey(10L, "requester-public-key"))
+			.thenReturn(Optional.of(requesterDevice));
+
+		ProjectLinkReqDto reqDto = ProjectLinkReqDto.builder()
+			.publicKey("requester-public-key")
+			.deviceId(10L)
+			.userGithubId("writer")
+			.repositoryUrl("https://github.com/Team-NEEEE/envio-cli.git")
+			.owner("Other-Team")
+			.repoName("envio-cli")
+			.build();
+
+		// when, then
+		assertThatThrownBy(() -> service.linkProject(reqDto))
+			.isInstanceOf(ProjectException.class)
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.BAD_REQUEST);
+	}
+
+	@Test
+	@DisplayName("linkProject는 현재 기기의 active wrapped key가 없으면 JOIN_STATUS_PENDING을 반환한다")
+	void linkProject_failsWithJoinStatusPendingWhenWrappedKeyIsMissing() {
+		// given
+		CliProjectFacadeServiceImpl service = createService();
+		UserDevice requesterDevice = userDevice(10L, 1L, "writer", "requester-public-key");
+		Project project = project(1L, "Team-NEEEE", "envio-cli");
+
+		when(userDeviceRepository.findByIdAndPublicKey(10L, "requester-public-key"))
+			.thenReturn(Optional.of(requesterDevice));
+		when(projectRepository.findByOrganizationNameAndProjectName("Team-NEEEE", "envio-cli"))
+			.thenReturn(Optional.of(project));
+		when(githubRepositoryMemberClient.getRepositoryAccess("Team-NEEEE", "envio-cli"))
+			.thenReturn(new GithubRepositoryAccess(12345678L, List.of(
+				new GithubRepositoryMember("writer", ProjectRole.WRITE)
+			)));
+		when(encryptedKeyRepository.findByUserDeviceIdAndProjectIdAndActiveTrue(10L, 1L))
+			.thenReturn(Optional.empty());
+
+		ProjectLinkReqDto reqDto = ProjectLinkReqDto.builder()
+			.publicKey("requester-public-key")
+			.deviceId(10L)
+			.userGithubId("writer")
+			.repositoryUrl("git@github.com:Team-NEEEE/envio-cli.git")
+			.build();
+
+		// when, then
+		assertThatThrownBy(() -> service.linkProject(reqDto))
+			.isInstanceOf(ProjectException.class)
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.JOIN_STATUS_PENDING);
+		assertThat(ErrorCode.JOIN_STATUS_PENDING.getCode()).isEqualTo("JOIN_STATUS_PENDING");
+	}
+
 	private CliProjectFacadeServiceImpl createService() {
 		return new CliProjectFacadeServiceImpl(
 			projectRepository,
@@ -168,6 +299,30 @@ class CliProjectFacadeServiceImplTest {
 			.user(user)
 			.deviceName(githubId + "-device")
 			.publicKey(publicKey)
+			.build();
+	}
+
+	private Project project(final Long projectId, final String organizationName, final String projectName) {
+		return Project.builder()
+			.id(projectId)
+			.organizationName(organizationName)
+			.projectName(projectName)
+			.versionId(0L)
+			.build();
+	}
+
+	private EncryptedKey encryptedKey(
+		final Long encryptedKeyId,
+		final Project project,
+		final UserDevice userDevice,
+		final String wrappedMasterKey
+	) {
+		return EncryptedKey.builder()
+			.id(encryptedKeyId)
+			.project(project)
+			.userDevice(userDevice)
+			.encryptedKey(wrappedMasterKey)
+			.active(true)
 			.build();
 	}
 }
