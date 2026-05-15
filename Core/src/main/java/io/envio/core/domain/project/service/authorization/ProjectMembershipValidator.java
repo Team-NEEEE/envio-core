@@ -7,12 +7,11 @@ import io.envio.core.common.error.ErrorCode;
 import io.envio.core.domain.project.exception.ProjectException;
 import io.envio.core.domain.project.repository.EncryptedKeyRepository;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @Transactional(readOnly = true)
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 public class ProjectMembershipValidator {
 
 	private final EncryptedKeyRepository encryptedKeyRepository;

@@ -53,7 +53,12 @@ public class ProjectController {
 		@RequestParam final String githubUserId,
 		@AuthenticationPrincipal final JwtClaims claims
 	) {
-		ProjectPullResDto response = projectFacadeService.pull(projectId, claims.userId(), githubUserId);
+		ProjectPullResDto response = projectFacadeService.pull(
+			projectId,
+			claims.userId(),
+			claims.githubId(),
+			githubUserId
+		);
 		return ResponseUtils.ok(response);
 	}
 
@@ -64,7 +69,7 @@ public class ProjectController {
 		@Valid @RequestBody final ProjectPushReqDto reqDto,
 		@AuthenticationPrincipal final JwtClaims claims
 	) {
-		ProjectPushResDto response = projectFacadeService.push(projectId, claims.userId(), reqDto);
+		ProjectPushResDto response = projectFacadeService.push(projectId, claims.userId(), claims.githubId(), reqDto);
 		return ResponseUtils.ok(response);
 	}
 

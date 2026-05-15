@@ -7,23 +7,14 @@ import io.envio.core.domain.project.dto.response.ProjectDetailResDto;
 import io.envio.core.domain.project.dto.response.ProjectHistoryResDto;
 import io.envio.core.domain.project.dto.response.ProjectPullResDto;
 import io.envio.core.domain.project.dto.response.ProjectPushResDto;
-import io.envio.core.domain.project.dto.response.ProjectResDto;
 
 public interface ProjectFacadeService {
 
-	ProjectPullResDto pull(Long projectId, Long userId, String githubUserId);
+	ProjectPullResDto pull(Long projectId, Long userId, String authenticatedGithubId, String githubUserId);
 
-	ProjectPullResDto pull(Long projectId, String githubUserId);
-
-	ProjectPushResDto push(Long projectId, Long userId, ProjectPushReqDto reqDto);
-
-	ProjectPushResDto push(Long projectId, ProjectPushReqDto reqDto);
+	ProjectPushResDto push(Long projectId, Long userId, String authenticatedGithubId, ProjectPushReqDto reqDto);
 
 	List<ProjectHistoryResDto> getProjectHistory(Long projectId, Long userId);
 
-	List<ProjectHistoryResDto> getProjectHistory(Long projectId);
-
 	ProjectDetailResDto getProjectDetail(Long projectId, Long userId);
-
-	ProjectDetailResDto getProjectDetail(Long projectId);
 }

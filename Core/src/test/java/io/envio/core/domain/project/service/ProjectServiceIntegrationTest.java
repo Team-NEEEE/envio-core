@@ -15,14 +15,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.envio.core.common.error.ErrorCode;
 import io.envio.core.domain.project.dto.request.ProjectPushReqDto;
+import io.envio.core.domain.project.entity.EncryptedKey;
 import io.envio.core.domain.project.entity.History;
 import io.envio.core.domain.project.entity.Project;
 import io.envio.core.domain.project.exception.ProjectException;
+import io.envio.core.domain.project.repository.EncryptedKeyRepository;
 import io.envio.core.domain.project.repository.HistoryRepository;
 import io.envio.core.domain.project.repository.ProjectRepository;
 import io.envio.core.domain.project.service.command.ProjectCommandService;
 import io.envio.core.domain.project.service.facade.ProjectFacadeService;
 import io.envio.core.domain.project.service.query.ProjectQueryService;
+import io.envio.core.domain.user.entity.User;
+import io.envio.core.domain.user.entity.UserDevice;
+import io.envio.core.domain.user.entity.UserRole;
+import io.envio.core.domain.user.repository.UserDeviceRepository;
+import io.envio.core.domain.user.repository.UserRepository;
 
 @SpringBootTest
 @Transactional
@@ -44,7 +51,17 @@ class ProjectServiceIntegrationTest {
 	@Autowired
 	private HistoryRepository historyRepository;
 
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private UserDeviceRepository userDeviceRepository;
+
+	@Autowired
+	private EncryptedKeyRepository encryptedKeyRepository;
+
 	private Project savedProject;
+	private User savedUser;
 
 	@BeforeEach
 	void setUp() {
@@ -54,6 +71,22 @@ class ProjectServiceIntegrationTest {
 			.versionId(0L)
 			.build();
 		savedProject = projectRepository.save(project);
+		savedUser = userRepository.save(User.builder()
+			.githubId("user1")
+			.email("user1@envio.io")
+			.role(UserRole.DEVELOPER)
+			.build());
+		UserDevice userDevice = userDeviceRepository.save(UserDevice.builder()
+			.user(savedUser)
+			.deviceName("test-device")
+			.publicKey("test-public-key")
+			.build());
+		encryptedKeyRepository.save(EncryptedKey.builder()
+			.userDevice(userDevice)
+			.project(savedProject)
+			.encryptedKey("encrypted-key")
+			.active(true)
+			.build());
 	}
 
 	@Test
@@ -220,7 +253,10 @@ class ProjectServiceIntegrationTest {
 	@DisplayName("프로젝트_상세_정보를_조회한다")
 	void getProjectDetail_success() {
 		// when
-		io.envio.core.domain.project.dto.response.ProjectDetailResDto result = projectFacadeService.getProjectDetail(savedProject.getId());
+		io.envio.core.domain.project.dto.response.ProjectDetailResDto result = projectFacadeService.getProjectDetail(
+			savedProject.getId(),
+			savedUser.getId()
+		);
 
 		// then
 		assertThat(result.projectId()).isEqualTo(savedProject.getId());

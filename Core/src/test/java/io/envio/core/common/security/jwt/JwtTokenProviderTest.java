@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import io.envio.core.common.config.properties.JwtProperties;
 
@@ -23,7 +24,10 @@ class JwtTokenProviderTest {
 
 	@BeforeEach
 	void setUp() {
-		jwtTokenProvider = new JwtTokenProvider(new JwtProperties(SECRET), new ObjectMapper());
+		ObjectMapper objectMapper = JsonMapper.builder()
+			.findAndAddModules()
+			.build();
+		jwtTokenProvider = new JwtTokenProvider(new JwtProperties(SECRET), objectMapper);
 		tokenFactory = new JwtTestTokenFactory(SECRET);
 	}
 

@@ -102,7 +102,7 @@ class FullSystemFlowIntegrationTest {
 			.build());
 
 		// [Step 5] 환경변수 업데이트 (Push)
-		projectFacadeService.push(projectCore.getId(), ProjectPushReqDto.builder()
+		projectFacadeService.push(projectCore.getId(), user.getId(), githubId, ProjectPushReqDto.builder()
 			.githubUserId(githubId)
 			.encryptedEnvironment(Map.of("DB_URL", "jdbc:postgresql://v1"))
 			.parentVersionId(0L)
@@ -129,12 +129,12 @@ class FullSystemFlowIntegrationTest {
 
 		// [Step 7] 프로젝트 상세 정보 조회 (특정 프로젝트 클릭 시 상세 이동)
 		Long targetProjectId = coreProjects.getFirst().projectId();
-		ProjectDetailResDto detail = projectFacadeService.getProjectDetail(targetProjectId);
+		ProjectDetailResDto detail = projectFacadeService.getProjectDetail(targetProjectId, user.getId());
 		assertThat(detail.projectName()).isEqualTo("Backend-API");
 		assertThat(detail.organizationName()).isEqualTo("Envio-Core");
 
 		// [Step 8] 프로젝트 버전 히스토리 조회
-		List<ProjectHistoryResDto> history = projectFacadeService.getProjectHistory(targetProjectId);
+		List<ProjectHistoryResDto> history = projectFacadeService.getProjectHistory(targetProjectId, user.getId());
 		assertThat(history).hasSize(1);
 		assertThat(history.get(0).versionId()).isEqualTo(1L);
 		assertThat(history.get(0).githubId()).isEqualTo(githubId);
