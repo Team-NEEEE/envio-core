@@ -1,6 +1,8 @@
 package io.envio.core.domain.user.service.facade;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +28,15 @@ public class UserFacadeServiceImpl implements UserFacadeService {
 	private final ProjectQueryService projectQueryService;
 
 	@Override
-	public List<ProjectResDto> getMyProjects(final String githubId) {
+	public Map<String, List<ProjectResDto>> getMyProjects(final String githubId) {
 		log.info("[User] 내 프로젝트 목록 조회 요청 - githubId: {}", githubId);
 		User user = userQueryService.findByGithubId(githubId);
 		List<Project> projects = projectQueryService.getUserProjects(user.getId());
+		
 		return projects.stream()
-			.map(ProjectConverter::toProjectResDto)
-			.toList();
+			.collect(Collectors.groupingBy(
+				Project::getOrganizationName,
+				Collectors.mapping(ProjectConverter::toProjectResDto, Collectors.toList())
+			));
 	}
 }
