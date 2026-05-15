@@ -27,7 +27,7 @@ public class SecurityConfig {
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(final HttpSecurity http) {
 		return http
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)

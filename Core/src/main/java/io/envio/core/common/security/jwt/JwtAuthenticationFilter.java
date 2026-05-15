@@ -2,6 +2,7 @@ package io.envio.core.common.security.jwt;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,9 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(
-		final HttpServletRequest request,
-		final HttpServletResponse response,
-		final FilterChain filterChain
+		@NonNull final HttpServletRequest request,
+		@NonNull final HttpServletResponse response,
+		@NonNull final FilterChain filterChain
 	) throws ServletException, IOException {
 		String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
 

@@ -3,6 +3,7 @@ package io.envio.core.common.security.jwt;
 import java.io.IOException;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -28,9 +29,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	@Override
 	public void commence(
-		final HttpServletRequest request,
-		final HttpServletResponse response,
-		final AuthenticationException authException
+		@NonNull final HttpServletRequest request,
+		@NonNull final HttpServletResponse response,
+		@NonNull final AuthenticationException authException
 	) throws IOException {
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
