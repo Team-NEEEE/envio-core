@@ -25,4 +25,14 @@ public class ProjectMembershipValidator {
 			throw new ProjectException(ErrorCode.ACCESS_DENIED);
 		}
 	}
+
+	public void validateProjectMember(final Long projectId, final String githubId) {
+		boolean isProjectMember = encryptedKeyRepository.existsByProjectIdAndUserDeviceUserGithubIdAndActiveTrue(
+			projectId,
+			githubId
+		);
+		if (!isProjectMember) {
+			throw new ProjectException(ErrorCode.ACCESS_DENIED);
+		}
+	}
 }

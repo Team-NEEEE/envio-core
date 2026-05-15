@@ -18,6 +18,8 @@ public interface EncryptedKeyRepository extends JpaRepository<EncryptedKey, Long
 
 	boolean existsByProjectIdAndUserDeviceUserIdAndActiveTrue(Long projectId, Long userId);
 
+	boolean existsByProjectIdAndUserDeviceUserGithubIdAndActiveTrue(Long projectId, String githubId);
+
 	List<EncryptedKey> findByProjectId(Long projectId);
 
 	List<EncryptedKey> findByUserDeviceId(Long userDeviceId);
