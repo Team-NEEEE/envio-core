@@ -14,6 +14,7 @@ import io.envio.core.domain.project.dto.response.ProjectPushResDto;
 import io.envio.core.domain.project.dto.response.ProjectResDto;
 import io.envio.core.domain.project.entity.History;
 import io.envio.core.domain.project.entity.Project;
+import io.envio.core.domain.project.service.authorization.ProjectMembershipValidator;
 import io.envio.core.domain.project.service.command.ProjectCommandService;
 import io.envio.core.domain.project.service.query.ProjectQueryService;
 
@@ -29,12 +30,25 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 
 	private final ProjectCommandService projectCommandService;
 	private final ProjectQueryService projectQueryService;
+	private final ProjectMembershipValidator projectMembershipValidator;
+
+	@Override
+	public ProjectPullResDto pull(final Long projectId, final Long userId, final String githubUserId) {
+		projectMembershipValidator.validateProjectMember(projectId, userId);
+		return pull(projectId, githubUserId);
+	}
 
 	@Override
 	public ProjectPullResDto pull(final Long projectId, final String githubUserId) {
 		log.info("[Project] 최신 환경변수 조회 요청 - projectId: {}, githubUserId: {}", projectId, githubUserId);
 		History history = projectQueryService.getLatestHistory(projectId, githubUserId);
 		return ProjectConverter.toPullResponse(history, "최신 환경변수 조회에 성공했습니다.");
+	}
+
+	@Override
+	public ProjectPushResDto push(final Long projectId, final Long userId, final ProjectPushReqDto reqDto) {
+		projectMembershipValidator.validateProjectMember(projectId, userId);
+		return push(projectId, reqDto);
 	}
 
 	@Override
@@ -45,12 +59,24 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 	}
 
 	@Override
+	public List<ProjectHistoryResDto> getProjectHistory(final Long projectId, final Long userId) {
+		projectMembershipValidator.validateProjectMember(projectId, userId);
+		return getProjectHistory(projectId);
+	}
+
+	@Override
 	public List<ProjectHistoryResDto> getProjectHistory(final Long projectId) {
 		log.info("[Project] 히스토리 조회 요청 - projectId: {}", projectId);
 		List<History> histories = projectQueryService.getProjectHistories(projectId);
 		return histories.stream()
 			.map(ProjectConverter::toHistoryResponse)
 			.toList();
+	}
+
+	@Override
+	public ProjectDetailResDto getProjectDetail(final Long projectId, final Long userId) {
+		projectMembershipValidator.validateProjectMember(projectId, userId);
+		return getProjectDetail(projectId);
 	}
 
 	@Override

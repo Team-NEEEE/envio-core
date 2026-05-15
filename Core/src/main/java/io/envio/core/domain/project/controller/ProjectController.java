@@ -3,6 +3,7 @@ package io.envio.core.domain.project.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.envio.core.common.response.BaseResponse;
+import io.envio.core.common.security.jwt.JwtClaims;
 import io.envio.core.common.util.ResponseUtils;
 import io.envio.core.domain.project.dto.request.ProjectPushReqDto;
 import io.envio.core.domain.project.dto.response.ProjectDetailResDto;
@@ -37,9 +39,10 @@ public class ProjectController {
 	@Operation(summary = "프로젝트 상세 정보 조회", description = "특정 프로젝트의 모든 상세 정보를 조회합니다.")
 	@GetMapping("/{projectId}")
 	public ResponseEntity<BaseResponse<ProjectDetailResDto>> getProjectDetail(
-		@PathVariable final Long projectId
+		@PathVariable final Long projectId,
+		@AuthenticationPrincipal final JwtClaims claims
 	) {
-		ProjectDetailResDto response = projectFacadeService.getProjectDetail(projectId);
+		ProjectDetailResDto response = projectFacadeService.getProjectDetail(projectId, claims.userId());
 		return ResponseUtils.ok(response);
 	}
 
@@ -47,9 +50,10 @@ public class ProjectController {
 	@PostMapping("/{projectId}/pull/latest")
 	public ResponseEntity<BaseResponse<ProjectPullResDto>> pullLatest(
 		@PathVariable final Long projectId,
-		@RequestParam final String githubUserId
+		@RequestParam final String githubUserId,
+		@AuthenticationPrincipal final JwtClaims claims
 	) {
-		ProjectPullResDto response = projectFacadeService.pull(projectId, githubUserId);
+		ProjectPullResDto response = projectFacadeService.pull(projectId, claims.userId(), githubUserId);
 		return ResponseUtils.ok(response);
 	}
 
@@ -57,18 +61,20 @@ public class ProjectController {
 	@PostMapping("/{projectId}/push")
 	public ResponseEntity<BaseResponse<ProjectPushResDto>> push(
 		@PathVariable final Long projectId,
-		@Valid @RequestBody final ProjectPushReqDto reqDto
+		@Valid @RequestBody final ProjectPushReqDto reqDto,
+		@AuthenticationPrincipal final JwtClaims claims
 	) {
-		ProjectPushResDto response = projectFacadeService.push(projectId, reqDto);
+		ProjectPushResDto response = projectFacadeService.push(projectId, claims.userId(), reqDto);
 		return ResponseUtils.ok(response);
 	}
 
 	@Operation(summary = "프로젝트 히스토리 조회", description = "특정 프로젝트의 버전 히스토리를 조회합니다.")
 	@GetMapping("/{projectId}/history")
 	public ResponseEntity<BaseResponse<List<ProjectHistoryResDto>>> getProjectHistory(
-		@PathVariable final Long projectId
+		@PathVariable final Long projectId,
+		@AuthenticationPrincipal final JwtClaims claims
 	) {
-		List<ProjectHistoryResDto> response = projectFacadeService.getProjectHistory(projectId);
+		List<ProjectHistoryResDto> response = projectFacadeService.getProjectHistory(projectId, claims.userId());
 		return ResponseUtils.ok(response);
 	}
 }
