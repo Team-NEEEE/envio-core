@@ -33,8 +33,17 @@ public enum ErrorCode {
 	 * Project Error (PR-xxx)
 	 */
 	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "PR-001", "프로젝트를 찾을 수 없습니다."),
-	ENVIRONMENT_VERSION_NOT_INITIALIZED(HttpStatus.UNPROCESSABLE_ENTITY, "PR-002", "해당 프로젝트에 등록된 환경변수 버전이 없습니다."),
-	VERSION_CONFLICT(HttpStatus.CONFLICT, "PR-003", "서버의 최신 버전과 요청한 기준 버전이 일치하지 않습니다. 먼저 pull을 수행한 뒤 다시 push해 주세요.");
+	ENVIRONMENT_VERSION_NOT_INITIALIZED(
+		HttpStatus.UNPROCESSABLE_ENTITY,
+		"PR-002",
+		"해당 프로젝트에 등록된 환경변수 버전이 없습니다."
+	),
+	VERSION_CONFLICT(
+		HttpStatus.CONFLICT,
+		"PR-003",
+		"서버의 최신 버전과 요청한 기준 버전이 일치하지 않습니다. 먼저 pull을 수행한 후 다시 push해 주세요."
+	),
+	JOIN_STATUS_PENDING(HttpStatus.CONFLICT, "JOIN_STATUS_PENDING", "프로젝트 가입 승인이 아직 완료되지 않았습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

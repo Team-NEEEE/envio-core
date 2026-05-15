@@ -15,6 +15,7 @@ import lombok.NonNull;
 @Builder
 public record ErrorResponse(
 	HttpStatus status,
+	String code,
 	String message,
 	String method,
 	String requestUri,
@@ -27,6 +28,7 @@ public record ErrorResponse(
 	) {
 		return ErrorResponse.builder()
 			.status(errorCode.getHttpStatus())
+			.code(errorCode.getCode())
 			.message(errorCode.getMessage())
 			.method(request.getMethod())
 			.requestUri(request.getRequestURI())
@@ -41,6 +43,7 @@ public record ErrorResponse(
 	) {
 		return ErrorResponse.builder()
 			.status(errorCode.getHttpStatus())
+			.code(errorCode.getCode())
 			.message(errorMessage)
 			.method(request.getMethod())
 			.requestUri(request.getRequestURI())
@@ -64,6 +67,7 @@ public record ErrorResponse(
 		));
 		return ErrorResponse.builder()
 			.status(this.status)
+			.code(this.code)
 			.message(this.message)
 			.method(this.method)
 			.requestUri(this.requestUri)
