@@ -2,6 +2,7 @@ package io.envio.core;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = {
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 	"io.envio.core.domain.project",
 	"io.envio.core.domain.user"
 })
+@ConfigurationPropertiesScan(basePackages = "io.envio.core.common.config.properties")
 @EnableJpaRepositories(basePackages = {
 	"io.envio.core.domain.project.repository",
 	"io.envio.core.domain.user.repository"

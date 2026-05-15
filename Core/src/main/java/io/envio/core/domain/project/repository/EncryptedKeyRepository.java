@@ -16,6 +16,8 @@ public interface EncryptedKeyRepository extends JpaRepository<EncryptedKey, Long
 		"SELECT DISTINCT e.project FROM EncryptedKey e " + "WHERE e.userDevice.user.id = :userId AND e.active = true")
 	List<Project> findProjectsByUserId(@Param("userId") Long userId);
 
+	boolean existsByProjectIdAndUserDeviceUserIdAndActiveTrue(Long projectId, Long userId);
+
 	List<EncryptedKey> findByProjectId(Long projectId);
 
 	List<EncryptedKey> findByUserDeviceId(Long userDeviceId);
