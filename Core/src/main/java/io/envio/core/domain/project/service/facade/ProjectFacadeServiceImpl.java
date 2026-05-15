@@ -45,6 +45,12 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 		return pullInternal(projectId, githubUserId);
 	}
 
+	@Override
+	public ProjectPullResDto pull(final Long projectId, final String githubUserId) {
+		projectMembershipValidator.validateProjectMember(projectId, githubUserId);
+		return pullInternal(projectId, githubUserId);
+	}
+
 	private ProjectPullResDto pullInternal(final Long projectId, final String githubUserId) {
 		log.info("[Project] 최신 환경변수 조회 요청 - projectId: {}, githubUserId: {}", projectId, githubUserId);
 		History history = projectQueryService.getLatestHistory(projectId, githubUserId);
@@ -60,6 +66,12 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 	) {
 		projectMembershipValidator.validateProjectMember(projectId, userId);
 		validateSameGithubUser(authenticatedGithubId, reqDto.githubUserId());
+		return pushInternal(projectId, reqDto);
+	}
+
+	@Override
+	public ProjectPushResDto push(final Long projectId, final ProjectPushReqDto reqDto) {
+		projectMembershipValidator.validateProjectMember(projectId, reqDto.githubUserId());
 		return pushInternal(projectId, reqDto);
 	}
 

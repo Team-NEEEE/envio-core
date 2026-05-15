@@ -9,6 +9,11 @@ public final class SecurityConstants {
 	public static final String[] PUBLIC_URLS = {
 		"/swagger-ui/**",
 		"/v3/api-docs/**",
-		"/actuator/health"
+		"/actuator/health",
+		"/api/core/projects/*/pull/latest",
+		"/api/core/projects/*/push",
+		"/api/v1/cli/create",
+		"/api/core/projects/link",
+		"/api/projects/*/wrapped-keys"
 	};
 }

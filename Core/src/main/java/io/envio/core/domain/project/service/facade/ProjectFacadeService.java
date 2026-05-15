@@ -12,7 +12,11 @@ public interface ProjectFacadeService {
 
 	ProjectPullResDto pull(Long projectId, Long userId, String authenticatedGithubId, String githubUserId);
 
+	ProjectPullResDto pull(Long projectId, String githubUserId);
+
 	ProjectPushResDto push(Long projectId, Long userId, String authenticatedGithubId, ProjectPushReqDto reqDto);
+
+	ProjectPushResDto push(Long projectId, ProjectPushReqDto reqDto);
 
 	List<ProjectHistoryResDto> getProjectHistory(Long projectId, Long userId);
 
