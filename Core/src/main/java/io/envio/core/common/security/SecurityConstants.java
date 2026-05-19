@@ -14,6 +14,7 @@ public final class SecurityConstants {
 		"/api/core/projects/*/push",
 		"/api/v1/cli/create",
 		"/api/core/projects/link",
-		"/api/projects/*/wrapped-keys"
+		"/api/projects/*/wrapped-keys",
+		"/api/cli/projects/*/history"
 	};
 }
