@@ -1,6 +1,7 @@
 package io.envio.core.domain.project.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,6 +24,9 @@ public record ProjectHistoryResDto(
 
 	@JsonProperty("github_id")
 	String githubId,
+
+	@JsonProperty("encrypted_environment")
+	Map<String, Object> encryptedEnvironment,
 
 	@JsonProperty("created_at")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
