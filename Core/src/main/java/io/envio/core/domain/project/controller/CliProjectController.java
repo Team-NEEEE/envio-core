@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.envio.core.common.response.BaseResponse;
-import io.envio.core.common.security.jwt.JwtClaims;
 import io.envio.core.common.util.ResponseUtils;
 import io.envio.core.domain.project.dto.request.ProjectCreateReqDto;
 import io.envio.core.domain.project.dto.request.ProjectLinkReqDto;
