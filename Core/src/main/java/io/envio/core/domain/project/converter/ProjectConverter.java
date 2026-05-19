@@ -66,6 +66,7 @@ public class ProjectConverter {
 			.versionId(history.getVersionId())
 			.baseVersionId(history.getBaseVersionId())
 			.githubId(history.getUserGithubId())
+			.encryptedEnvironment(history.getEncryptedEnvironment())
 			.createdAt(history.getCreatedAt())
 			.build();
 	}

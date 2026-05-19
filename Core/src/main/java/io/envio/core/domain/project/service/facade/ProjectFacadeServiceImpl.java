@@ -87,6 +87,11 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 		return getProjectHistoryInternal(projectId);
 	}
 
+	@Override
+	public List<ProjectHistoryResDto> getProjectHistory(final Long projectId) {
+		return getProjectHistoryInternal(projectId);
+	}
+
 	private List<ProjectHistoryResDto> getProjectHistoryInternal(final Long projectId) {
 		log.info("[Project] 히스토리 조회 요청 - projectId: {}", projectId);
 		List<History> histories = projectQueryService.getProjectHistories(projectId);
@@ -100,6 +105,7 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 		projectMembershipValidator.validateProjectMember(projectId, userId);
 		return getProjectDetailInternal(projectId);
 	}
+
 
 	private ProjectDetailResDto getProjectDetailInternal(final Long projectId) {
 		log.info("[Project] 상세 정보 조회 요청 - projectId: {}", projectId);
