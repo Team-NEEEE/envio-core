@@ -12,9 +12,11 @@ import io.envio.core.domain.project.dto.response.ProjectDetailResDto;
 import io.envio.core.domain.project.dto.response.ProjectHistoryResDto;
 import io.envio.core.domain.project.dto.response.ProjectPullResDto;
 import io.envio.core.domain.project.dto.response.ProjectPushResDto;
+import io.envio.core.domain.project.entity.EncryptedKey;
 import io.envio.core.domain.project.entity.History;
 import io.envio.core.domain.project.entity.Project;
 import io.envio.core.domain.project.exception.ProjectException;
+import io.envio.core.domain.project.repository.EncryptedKeyRepository;
 import io.envio.core.domain.project.service.authorization.ProjectMembershipValidator;
 import io.envio.core.domain.project.service.command.ProjectCommandService;
 import io.envio.core.domain.project.service.query.ProjectQueryService;
@@ -32,29 +34,32 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 	private final ProjectCommandService projectCommandService;
 	private final ProjectQueryService projectQueryService;
 	private final ProjectMembershipValidator projectMembershipValidator;
+	private final EncryptedKeyRepository encryptedKeyRepository;
 
 	@Override
 	public ProjectPullResDto pull(
 		final Long projectId,
 		final Long userId,
 		final String authenticatedGithubId,
-		final String githubUserId
+		final String githubUserId,
+		final String deviceId
 	) {
 		projectMembershipValidator.validateProjectMember(projectId, userId);
 		validateSameGithubUser(authenticatedGithubId, githubUserId);
-		return pullInternal(projectId, githubUserId);
+		return pullInternal(projectId, githubUserId, deviceId);
 	}
 
 	@Override
-	public ProjectPullResDto pull(final Long projectId, final String githubUserId) {
+	public ProjectPullResDto pull(final Long projectId, final String githubUserId, final String deviceId) {
 		projectMembershipValidator.validateProjectMember(projectId, githubUserId);
-		return pullInternal(projectId, githubUserId);
+		return pullInternal(projectId, githubUserId, deviceId);
 	}
 
-	private ProjectPullResDto pullInternal(final Long projectId, final String githubUserId) {
+	private ProjectPullResDto pullInternal(final Long projectId, final String githubUserId, final String deviceId) {
 		log.info("[Project] 최신 환경변수 조회 요청 - projectId: {}, githubUserId: {}", projectId, githubUserId);
 		History history = projectQueryService.getLatestHistory(projectId, githubUserId);
-		return ProjectConverter.toPullResponse(history, "최신 환경변수 조회에 성공했습니다.");
+		String wrappedMasterKey = resolveWrappedMasterKey(projectId, githubUserId, deviceId);
+		return ProjectConverter.toPullResponse(history, "최신 환경변수 조회에 성공했습니다.", wrappedMasterKey);
 	}
 
 	@Override
@@ -116,6 +121,29 @@ public class ProjectFacadeServiceImpl implements ProjectFacadeService {
 	private void validateSameGithubUser(final String authenticatedGithubId, final String requestedGithubId) {
 		if (!authenticatedGithubId.equals(requestedGithubId)) {
 			throw new ProjectException(ErrorCode.ACCESS_DENIED);
+		}
+	}
+
+	private String resolveWrappedMasterKey(final Long projectId, final String githubUserId, final String deviceId) {
+		if (deviceId == null || deviceId.isBlank()) {
+			return null;
+		}
+		Long userDeviceId = parseDeviceId(deviceId);
+		EncryptedKey encryptedKey = encryptedKeyRepository
+			.findByUserDeviceIdAndProjectIdAndUserDeviceUserGithubIdAndActiveTrue(
+				userDeviceId,
+				projectId,
+				githubUserId
+			)
+			.orElseThrow(() -> new ProjectException(ErrorCode.JOIN_STATUS_PENDING));
+		return encryptedKey.getEncryptedKey();
+	}
+
+	private Long parseDeviceId(final String deviceId) {
+		try {
+			return Long.valueOf(deviceId.strip());
+		} catch (NumberFormatException exception) {
+			throw new ProjectException(ErrorCode.BAD_REQUEST);
 		}
 	}
 }

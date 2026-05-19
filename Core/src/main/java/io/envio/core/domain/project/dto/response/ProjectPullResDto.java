@@ -15,6 +15,7 @@ public record ProjectPullResDto(
 	String envName,
 	Long versionId,
 	Map<String, Object> encryptedEnvironment,
+	String wrappedMasterKey,
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	LocalDateTime createdAt,

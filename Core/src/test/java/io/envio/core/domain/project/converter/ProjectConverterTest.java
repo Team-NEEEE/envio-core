@@ -40,6 +40,30 @@ class ProjectConverterTest {
 		assertThat(result.versionId()).isEqualTo(7L);
 		assertThat(result.message()).isEqualTo("success");
 		assertThat(result.encryptedEnvironment()).containsEntry("key", "value");
+		assertThat(result.wrappedMasterKey()).isNull();
+	}
+
+	@Test
+	@DisplayName("히스토리_엔티티를_래핑키가_포함된_Pull_응답_DTO로_변환한다")
+	void toPullResponse_mapsWrappedMasterKeyToDto() {
+		// given
+		Project project = Project.builder()
+			.id(1L)
+			.projectName("test-project")
+			.build();
+
+		History history = History.builder()
+			.historiesId(100L)
+			.project(project)
+			.versionId(7L)
+			.encryptedEnvironment(Map.of("key", "value"))
+			.build();
+
+		// when
+		ProjectPullResDto result = ProjectConverter.toPullResponse(history, "success", "wrapped-key");
+
+		// then
+		assertThat(result.wrappedMasterKey()).isEqualTo("wrapped-key");
 	}
 
 	@Test

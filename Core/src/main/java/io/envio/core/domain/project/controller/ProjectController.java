@@ -51,17 +51,19 @@ public class ProjectController {
 	public ResponseEntity<BaseResponse<ProjectPullResDto>> pullLatest(
 		@PathVariable final Long projectId,
 		@RequestParam final String githubUserId,
+		@RequestParam(required = false) final String deviceId,
 		@AuthenticationPrincipal final JwtClaims claims
 	) {
 		ProjectPullResDto response;
 		if (claims == null) {
-			response = projectFacadeService.pull(projectId, githubUserId);
+			response = projectFacadeService.pull(projectId, githubUserId, deviceId);
 		} else {
 			response = projectFacadeService.pull(
 				projectId,
 				claims.userId(),
 				claims.githubId(),
-				githubUserId
+				githubUserId,
+				deviceId
 			);
 		}
 		return ResponseUtils.ok(response);

@@ -36,6 +36,14 @@ public class ProjectConverter {
 	}
 
 	public static ProjectPullResDto toPullResponse(final History history, final String message) {
+		return toPullResponse(history, message, null);
+	}
+
+	public static ProjectPullResDto toPullResponse(
+		final History history,
+		final String message,
+		final String wrappedMasterKey
+	) {
 		return ProjectPullResDto.builder()
 			.message(message)
 			.historyId(history.getHistoriesId())
@@ -43,6 +51,7 @@ public class ProjectConverter {
 			.envName(history.getProject().getProjectName()) // Assuming envName comes from project or similar logic
 			.versionId(history.getVersionId())
 			.encryptedEnvironment(history.getEncryptedEnvironment())
+			.wrappedMasterKey(wrappedMasterKey)
 			.createdAt(history.getCreatedAt())
 			.updatedAt(history.getUpdatedAt())
 			.build();
