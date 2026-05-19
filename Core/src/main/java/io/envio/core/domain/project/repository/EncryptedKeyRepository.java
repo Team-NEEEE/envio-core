@@ -33,4 +33,10 @@ public interface EncryptedKeyRepository extends JpaRepository<EncryptedKey, Long
 		Long userDeviceId,
 		Long projectId
 	);
+
+	Optional<EncryptedKey> findByUserDeviceIdAndProjectIdAndUserDeviceUserGithubIdAndActiveTrue(
+		Long userDeviceId,
+		Long projectId,
+		String githubId
+	);
 }
